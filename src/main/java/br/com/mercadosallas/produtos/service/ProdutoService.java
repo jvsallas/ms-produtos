@@ -1,17 +1,14 @@
 package br.com.mercadosallas.produtos.service;
 
 import br.com.mercadosallas.categorias.model.CategoriaEntity;
-import br.com.mercadosallas.categorias.repository.CategoriaRepository;
 import br.com.mercadosallas.categorias.service.CategoriaService;
-import br.com.mercadosallas.fornecedores.exception.ClienteNotFoundException;
+import br.com.mercadosallas.fornecedores.exception.ProdutoNotFoundException;
 import br.com.mercadosallas.fornecedores.model.FornecedorEntity;
-import br.com.mercadosallas.fornecedores.repository.FornecedorRepository;
 import br.com.mercadosallas.fornecedores.service.FornecedorService;
 import br.com.mercadosallas.produtos.dto.ProdutoAtualizacaoForm;
 import br.com.mercadosallas.produtos.dto.ProdutoDto;
 import br.com.mercadosallas.produtos.dto.ProdutoForm;
 import br.com.mercadosallas.produtos.exception.exceptions.ProdutoAlreadyExistsException;
-import br.com.mercadosallas.produtos.exception.exceptions.ProdutoNotFoundException;
 import br.com.mercadosallas.produtos.mapper.ProdutoMapper;
 import br.com.mercadosallas.produtos.model.ProdutoEntity;
 import br.com.mercadosallas.produtos.repository.ProdutoRepository;

@@ -1,6 +1,6 @@
-# Mercado-Sallas
+# Mercado-Sallas Módulo Produto
 
-Sistema em Spring Boot MVC que possibilita realizar pedidos de produtos para um determinado cliente.
+Módulo em Spring Boot que abrange o sistema produto do mercado-sallas.
 
 [![Spring version](https://img.shields.io/badge/spring-2.3-green?logo=spring)](https://spring.io)
 

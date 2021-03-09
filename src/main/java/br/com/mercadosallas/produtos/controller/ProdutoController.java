@@ -30,9 +30,9 @@ public class ProdutoController {
     @GetMapping
     public ResponseEntity<List<ProdutoDto>> listarProdutos() {
 
-        List<ProdutoDto> clientes = produtoService.listarProdutos();
+        List<ProdutoDto> produtos = produtoService.listarProdutos();
 
-        return ResponseEntity.status(HttpStatus.OK).body(clientes);
+        return ResponseEntity.status(HttpStatus.OK).body(produtos);
     }
 
     @GetMapping("/{id}")

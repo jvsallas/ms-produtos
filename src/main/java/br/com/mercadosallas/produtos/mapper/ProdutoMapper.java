@@ -37,8 +37,8 @@ public class ProdutoMapper {
         return produtoDto;
     }
 
-    public static List<ProdutoDto> mapToListDto(List<ProdutoEntity> clientes){
-        return clientes.stream().map(ProdutoMapper::mapToDto).collect(Collectors.toList());
+    public static List<ProdutoDto> mapToListDto(List<ProdutoEntity> produtos){
+        return produtos.stream().map(ProdutoMapper::mapToDto).collect(Collectors.toList());
     }
 
 }
