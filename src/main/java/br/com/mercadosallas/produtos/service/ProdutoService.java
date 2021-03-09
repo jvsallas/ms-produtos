@@ -70,14 +70,14 @@ public class ProdutoService {
         return ProdutoMapper.mapToListDto(produtos);
     }
 
-    public ProdutoDto listarProdutoPorId(String id) {
+    public ProdutoDto listarProdutoPorId(Long id) {
 
         ProdutoEntity produtoEntity = buscarProdutoPorId(id);
 
         return ProdutoMapper.mapToDto(produtoEntity);
     }
 
-    public ProdutoDto alterarDadosProdutos(String id, ProdutoAtualizacaoForm form) {
+    public ProdutoDto alterarDadosProdutos(Long id, ProdutoAtualizacaoForm form) {
 
         log.info("Alterando dados do produto.");
 
@@ -95,7 +95,7 @@ public class ProdutoService {
         return ProdutoMapper.mapToDto(produtoEntity);
     }
 
-    public void deletarProduto(String id) {
+    public void deletarProduto(Long id) {
 
         log.info("Deletando produto: {}", id);
 
@@ -104,7 +104,7 @@ public class ProdutoService {
         produtoRepository.deleteById(id);
     }
 
-    public ProdutoEntity buscarProdutoPorId(String id) {
+    public ProdutoEntity buscarProdutoPorId(Long id) {
         Optional<ProdutoEntity> produtoOpt = produtoRepository.findById(id);
 
         return produtoOpt.orElseThrow(() ->

@@ -15,7 +15,7 @@ import java.util.List;
 public class ProdutoDto {
 
     @JsonProperty("id")
-    private String id;
+    private Long id;
     @JsonProperty("nome")
     private String nome;
     @JsonProperty("descricao")

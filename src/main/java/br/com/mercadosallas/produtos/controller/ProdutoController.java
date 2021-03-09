@@ -36,7 +36,7 @@ public class ProdutoController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> listarProdutoPorId(@PathVariable String id) {
+    public ResponseEntity<?> listarProdutoPorId(@PathVariable Long id) {
 
         ProdutoDto produtoDto = produtoService.listarProdutoPorId(id);
 
@@ -45,13 +45,13 @@ public class ProdutoController {
 
     @PutMapping("/{id}")
     @Transactional
-    public ResponseEntity<ProdutoDto> alterarProduto(@PathVariable String id, @RequestBody ProdutoAtualizacaoForm form) {
+    public ResponseEntity<ProdutoDto> alterarProduto(@PathVariable Long id, @RequestBody ProdutoAtualizacaoForm form) {
         ProdutoDto produtoDto = produtoService.alterarDadosProdutos(id, form);
         return ResponseEntity.status(HttpStatus.OK).body(produtoDto);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deletarProduto(@PathVariable String id) {
+    public ResponseEntity<?> deletarProduto(@PathVariable Long id) {
         produtoService.deletarProduto(id);
         return ResponseEntity.noContent().build();
     }
