@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -39,5 +40,5 @@ public class CarrinhoEntity {
     private String statusEntrega;
 
     @Column(name = "data_compra")
-    private LocalDateTime dataCompra;
+    private LocalDate dataCompra;
 }

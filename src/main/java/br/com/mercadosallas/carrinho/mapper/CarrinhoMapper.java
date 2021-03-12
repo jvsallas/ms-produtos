@@ -10,6 +10,7 @@ import br.com.mercadosallas.produtos.dto.ProdutoForm;
 import br.com.mercadosallas.produtos.mapper.ProdutoMapper;
 import br.com.mercadosallas.produtos.model.ProdutoEntity;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -26,7 +27,7 @@ public class CarrinhoMapper {
         carrinhoEntity.setProdutos(produtos);
         carrinhoEntity.setStatusPagamento(statusPagamentoPendente);
         carrinhoEntity.setStatusEntrega(statusAguardandoPagamento);
-        carrinhoEntity.setDataCompra(LocalDateTime.now());
+        carrinhoEntity.setDataCompra(LocalDate.now());
         carrinhoEntity.setValorCompra(valorTotalCompra);
         carrinhoEntity.setQtdProdutos(qtdProdutos);
 

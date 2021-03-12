@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -20,6 +21,6 @@ public class CarrinhoSaida {
     private Double valorCompra;
     private String statusPagamento;
     private String statusEntrega;
-    private LocalDateTime dataCompra;
+    private LocalDate dataCompra;
     private Integer qtdProdutos;
 }

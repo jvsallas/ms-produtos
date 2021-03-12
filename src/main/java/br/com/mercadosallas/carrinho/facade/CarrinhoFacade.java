@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -67,40 +68,40 @@ public class CarrinhoFacade {
         return CarrinhoMapper.mapToDto(retornoBanco.get());
     }
 
-//    public ConsultaSaida consultarComprasRealizadasPorPeriodo(Date dataInicio, Date dataFim) throws Exception {
-//
-//        if (dataInicio == null || dataFim == null || dataFim.compareTo(dataInicio) < 0) {
-//            throw new Exception("Data Invalida.");
-//        }
-//
-//        List<CarrinhoEntity> retornoPedidosEVendas = retornarTodasEntidadesDePedidosEVendas();
-//
-//        List<CarrinhoSaida> listaVendasNoPeriodo = new ArrayList<>();
-//
-//        for (CarrinhoEntity carrinho : retornoPedidosEVendas) {
-//
-//            if (dataInicio.compareTo(carrinho.getDataCompra()) <= 0
-//                    && dataFim.compareTo(carrinho.getDataCompra()) >= 0) {
-//                if (carrinho.getStatusPagamento() == "Pago") {
-//                    listaVendasNoPeriodo.add(CarrinhoMapper.INSTANCE.mapToSaida(carrinho));
-//                }
-//            }
-//        }
-//
-//        if (listaVendasNoPeriodo.isEmpty()) {
-//            throw new Exception("Não ha vendas no periodo informado");
-//        }
-//
-//        ConsultaSaida extratoSaida = new ConsultaSaida();
-//
-//        extratoSaida.setVendas(listaVendasNoPeriodo);
-//
-//        for (CarrinhoSaida carrinhoSaida : listaVendasNoPeriodo) {
-//            extratoSaida.setTotalValorCompras(extratoSaida.getTotalValorCompras() + carrinhoSaida.getValorCompra());
-//            extratoSaida.setTotalVendas(extratoSaida.getTotalVendas() + carrinhoSaida.getQtdProdutos());
-//        }
-//        return extratoSaida;
-//    }
+    public ConsultaSaida consultarComprasRealizadasPorPeriodo(LocalDate dataInicio, LocalDate dataFim) throws Exception {
+
+        if (dataInicio == null || dataFim == null || dataFim.compareTo(dataInicio) < 0) {
+            throw new Exception("Data Invalida.");
+        }
+
+        List<CarrinhoEntity> retornoPedidosEVendas = retornarTodasEntidadesDePedidosEVendas();
+
+        List<CarrinhoSaida> listaVendasNoPeriodo = new ArrayList<>();
+
+        for (CarrinhoEntity carrinho : retornoPedidosEVendas) {
+
+            if (dataInicio.compareTo(carrinho.getDataCompra()) <= 0
+                    && dataFim.compareTo(carrinho.getDataCompra()) >= 0) {
+                if (carrinho.getStatusPagamento().equals("Pago")) {
+                    listaVendasNoPeriodo.add(CarrinhoMapper.mapToDto(carrinho));
+                }
+            }
+        }
+
+        if (listaVendasNoPeriodo.isEmpty()) {
+            throw new Exception("Não ha vendas no periodo informado");
+        }
+
+        ConsultaSaida extratoSaida = new ConsultaSaida();
+
+        extratoSaida.setVendas(listaVendasNoPeriodo);
+
+        for (CarrinhoSaida carrinhoSaida : listaVendasNoPeriodo) {
+            extratoSaida.setTotalValorCompras(extratoSaida.getTotalValorCompras() + carrinhoSaida.getValorCompra());
+            extratoSaida.setTotalVendas(extratoSaida.getTotalVendas() + carrinhoSaida.getQtdProdutos());
+        }
+        return extratoSaida;
+    }
 
     public ConsultaSaida consultarEntregasPendentes() throws Exception {
 
