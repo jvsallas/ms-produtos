@@ -1,6 +1,7 @@
 package br.com.mercadosallas.carrinho.facade;
 
 
+import br.com.mercadosallas.carrinho.exception.*;
 import br.com.mercadosallas.carrinho.mapper.CarrinhoMapper;
 import br.com.mercadosallas.carrinho.model.CarrinhoEntity;
 import br.com.mercadosallas.carrinho.model.CarrinhoEntrada;
@@ -13,9 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -34,13 +33,13 @@ public class CarrinhoFacade {
     public CarrinhoSaida realizarPedidoCompra(String idCliente, CarrinhoEntrada carrinhoEntrada) throws Exception {
 
         if (carrinhoEntrada.getProdutos().isEmpty()) {
-            throw new Exception("Lista de produto(s) preenchida incorretamente. Por favor, adicione um ou mais produtos ao pedido.");
+            throw new ListaProdutosInvalidaException("Lista de produto(s) preenchida incorretamente. Por favor, adicione um ou mais produtos ao pedido.");
         }
 
         List<ProdutoEntity> produtos = produtoRepository.findAllById(carrinhoEntrada.getProdutos());
 
         if (produtos.isEmpty()) {
-            throw new Exception("Produto(s) não encontrado.");
+            throw new PedidoCompraNotFoundException("Produto(s) não encontrado.");
         }
 
         Double valorCompraTotal = 0D;
@@ -60,10 +59,9 @@ public class CarrinhoFacade {
     }
 
     public CarrinhoSaida buscarPedido(Long id) throws Exception {
-        CarrinhoEntity carrinhoEntity;
         Optional<CarrinhoEntity> retornoBanco = carrinhoRepository.findById(id);
         if (!retornoBanco.isPresent())
-            throw new Exception("Pedido não encontrado");
+            throw new PedidoCompraNotFoundException("Pedido não encontrado");
 
         return CarrinhoMapper.mapToDto(retornoBanco.get());
     }
@@ -71,7 +69,7 @@ public class CarrinhoFacade {
     public ConsultaSaida consultarComprasRealizadasPorPeriodo(LocalDate dataInicio, LocalDate dataFim) throws Exception {
 
         if (dataInicio == null || dataFim == null || dataFim.compareTo(dataInicio) < 0) {
-            throw new Exception("Data Invalida.");
+            throw new DataInvalidaException("Data Invalida.");
         }
 
         List<CarrinhoEntity> retornoPedidosEVendas = retornarTodasEntidadesDePedidosEVendas();
@@ -89,7 +87,7 @@ public class CarrinhoFacade {
         }
 
         if (listaVendasNoPeriodo.isEmpty()) {
-            throw new Exception("Não ha vendas no periodo informado");
+            throw new PedidoCompraNotFoundException("Não há compras no período informado");
         }
 
         ConsultaSaida extratoSaida = new ConsultaSaida();
@@ -116,7 +114,7 @@ public class CarrinhoFacade {
         }
 
         if (listaVendasNaoEntregue.isEmpty()) {
-            throw new Exception("Não ha entregas pendentes.");
+            throw new PedidoCompraNotFoundException("Não há entregas pendentes.");
         }
 
         ConsultaSaida extrato = new ConsultaSaida();
@@ -133,7 +131,7 @@ public class CarrinhoFacade {
 
         List<CarrinhoEntity> retornoPedidosEVendas = carrinhoRepository.findAll();
         if (retornoPedidosEVendas.isEmpty()) {
-            throw new Exception("Não ha pedidos/compras realizadas.");
+            throw new PedidoCompraNotFoundException("Não ha pedidos/compras realizadas.");
         }
 
         return retornoPedidosEVendas;
@@ -152,7 +150,7 @@ public class CarrinhoFacade {
         CarrinhoEntity entidade = buscaNoRespositoryPorIdCompraEIdCliente(idCliente, idCompra);
 
         if (!entidade.getStatusPagamento().equals("Pendente")) {
-            throw new Exception("O pagamento da compra informada ja foi realizado. - Operacao Cancelada.");
+            throw new PagamentoJaRealizadoException("O pagamento da compra informada ja foi realizado. - Operacao Cancelada.");
         } else {
             entidade.setStatusPagamento("Pago");
             entidade.setStatusEntrega("Em rota");
@@ -168,13 +166,13 @@ public class CarrinhoFacade {
 
         CarrinhoEntity entidade = buscaNoRespositoryPorIdCompraEIdCliente(idCliente, idCompra);
 
-        if (entidade.getStatusEntrega() == "Em rota") {
+        if (entidade.getStatusEntrega().equals("Em rota"))
             entidade.setStatusEntrega("Entregue");
-        } else if (entidade.getStatusPagamento() == "Pendente") {
+        else if (entidade.getStatusPagamento().equals("Pendente"))
             throw new Exception("Pagamento pendente.");
-        } else {
+        else
             throw new Exception("A compra informada ja foi entregue.");
-        }
+
 
         carrinhoRepository.save(entidade);
 
@@ -186,11 +184,11 @@ public class CarrinhoFacade {
         Optional<CarrinhoEntity> carrinhoEntity = carrinhoRepository.findById(idCompra);
 
         if (!carrinhoEntity.isPresent()) {
-            throw new Exception("ID compra invalido.");
+            throw new CarrinhoNotFoundException("ID compra não encontrado.");
         }
 
         if (!carrinhoEntity.get().getIdCliente().equals(idCliente)) {
-            throw new Exception("Id cliente invalido.");
+            throw new ClientInvalidException("Id cliente invalido.");
         }
 
         return carrinhoEntity.get();

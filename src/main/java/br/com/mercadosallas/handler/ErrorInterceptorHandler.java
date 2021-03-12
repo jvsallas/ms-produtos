@@ -1,5 +1,6 @@
 package br.com.mercadosallas.handler;
 
+import br.com.mercadosallas.carrinho.exception.*;
 import br.com.mercadosallas.categorias.exception.CategoriaAlreadyExistsException;
 import br.com.mercadosallas.fornecedores.exception.FornecedorAlreadyExistsException;
 import br.com.mercadosallas.fornecedores.exception.FornecedorNotFoundException;
@@ -100,6 +101,44 @@ public class ErrorInterceptorHandler {
     public ErroDto handleTelefoneNotFoundException(TelefoneNotFoundException exception) {
         return new ErroDto(exception.getMessage());
     }
+
+
+    @ResponseStatus(code = HttpStatus.NOT_FOUND)
+    @ExceptionHandler(CarrinhoNotFoundException.class)
+    public ErroDto handleTelefoneCarrinhoNotFoundException(CarrinhoNotFoundException exception) {
+        return new ErroDto(exception.getMessage());
+    }
+
+    @ResponseStatus(code = HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(ClientInvalidException.class)
+    public ErroDto handleClientInvalidException(ClientInvalidException exception) {
+        return new ErroDto(exception.getMessage());
+    }
+
+    @ResponseStatus(code = HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(DataInvalidaException.class)
+    public ErroDto handleDataInvalidaException(DataInvalidaException exception) {
+        return new ErroDto(exception.getMessage());
+    }
+
+    @ResponseStatus(code = HttpStatus.CONFLICT)
+    @ExceptionHandler(PagamentoJaRealizadoException.class)
+    public ErroDto handlePagamentoJaRealizadoException(PagamentoJaRealizadoException exception) {
+        return new ErroDto(exception.getMessage());
+    }
+
+    @ResponseStatus(code = HttpStatus.NOT_FOUND)
+    @ExceptionHandler(PedidoCompraNotFoundException.class)
+    public ErroDto handlePedidoCompraNotFoundException(PedidoCompraNotFoundException exception) {
+        return new ErroDto(exception.getMessage());
+    }
+
+    @ResponseStatus(code = HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(ListaProdutosInvalidaException.class)
+    public ErroDto handleListaProdutosInvalidaException(ListaProdutosInvalidaException exception) {
+        return new ErroDto(exception.getMessage());
+    }
+
 
 
 }
