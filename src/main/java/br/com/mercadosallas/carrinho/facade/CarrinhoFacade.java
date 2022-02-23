@@ -30,17 +30,15 @@ public class CarrinhoFacade {
     private final static String STATUS_AGUARDANDO_PAGAMENTO = "Aguardando Pagamento";
     private final static String STATUS_PAGAMENTO_PENDENTE = "Pendente";
 
-    public CarrinhoSaida realizarPedidoCompra(String idCliente, CarrinhoEntrada carrinhoEntrada) throws Exception {
+    public CarrinhoSaida realizarPedidoCompra(String idCliente, CarrinhoEntrada carrinhoEntrada) {
 
-        if (carrinhoEntrada.getProdutos().isEmpty()) {
+        if (carrinhoEntrada.getProdutos().isEmpty())
             throw new ListaProdutosInvalidaException("Lista de produto(s) preenchida incorretamente. Por favor, adicione um ou mais produtos ao pedido.");
-        }
 
         List<ProdutoEntity> produtos = produtoRepository.findAllById(carrinhoEntrada.getProdutos());
 
-        if (produtos.isEmpty()) {
+        if (produtos.isEmpty())
             throw new PedidoCompraNotFoundException("Produto(s) não encontrado.");
-        }
 
         Double valorCompraTotal = 0D;
 
@@ -66,11 +64,10 @@ public class CarrinhoFacade {
         return CarrinhoMapper.mapToDto(retornoBanco.get());
     }
 
-    public ConsultaSaida consultarComprasRealizadasPorPeriodo(LocalDate dataInicio, LocalDate dataFim) throws Exception {
+    public ConsultaSaida consultarComprasRealizadasPorPeriodo(LocalDate dataInicio, LocalDate dataFim) {
 
-        if (dataInicio == null || dataFim == null || dataFim.compareTo(dataInicio) < 0) {
+        if (dataInicio == null || dataFim == null || dataFim.compareTo(dataInicio) < 0)
             throw new DataInvalidaException("Data Invalida.");
-        }
 
         List<CarrinhoEntity> retornoPedidosEVendas = retornarTodasEntidadesDePedidosEVendas();
 
@@ -80,15 +77,13 @@ public class CarrinhoFacade {
 
             if (dataInicio.compareTo(carrinho.getDataCompra()) <= 0
                     && dataFim.compareTo(carrinho.getDataCompra()) >= 0) {
-                if (carrinho.getStatusPagamento().equals("Pago")) {
+                if (carrinho.getStatusPagamento().equals("Pago"))
                     listaVendasNoPeriodo.add(CarrinhoMapper.mapToDto(carrinho));
-                }
             }
         }
 
-        if (listaVendasNoPeriodo.isEmpty()) {
+        if (listaVendasNoPeriodo.isEmpty())
             throw new PedidoCompraNotFoundException("Não há compras no período informado");
-        }
 
         ConsultaSaida extratoSaida = new ConsultaSaida();
 
@@ -101,21 +96,19 @@ public class CarrinhoFacade {
         return extratoSaida;
     }
 
-    public ConsultaSaida consultarEntregasPendentes() throws Exception {
+    public ConsultaSaida consultarEntregasPendentes() {
 
         List<CarrinhoEntity> retornoVendas = retornarTodasEntidadesDePedidosEVendas();
 
         List<CarrinhoSaida> listaVendasNaoEntregue = new ArrayList<>();
 
         for (CarrinhoEntity venda : retornoVendas) {
-            if (venda.getStatusEntrega().equals("Em rota")) {
+            if (venda.getStatusEntrega().equals("Em rota"))
                 listaVendasNaoEntregue.add(CarrinhoMapper.mapToDto(venda));
-            }
         }
 
-        if (listaVendasNaoEntregue.isEmpty()) {
+        if (listaVendasNaoEntregue.isEmpty())
             throw new PedidoCompraNotFoundException("Não há entregas pendentes.");
-        }
 
         ConsultaSaida extrato = new ConsultaSaida();
         extrato.setVendas(listaVendasNaoEntregue);
@@ -127,17 +120,16 @@ public class CarrinhoFacade {
         return extrato;
     }
 
-    public List<CarrinhoEntity> retornarTodasEntidadesDePedidosEVendas() throws Exception {
+    public List<CarrinhoEntity> retornarTodasEntidadesDePedidosEVendas() {
 
         List<CarrinhoEntity> retornoPedidosEVendas = carrinhoRepository.findAll();
-        if (retornoPedidosEVendas.isEmpty()) {
+        if (retornoPedidosEVendas.isEmpty())
             throw new PedidoCompraNotFoundException("Não ha pedidos/compras realizadas.");
-        }
 
         return retornoPedidosEVendas;
     }
 
-    public List<CarrinhoSaida> consultarTodosPedidosECompras() throws Exception {
+    public List<CarrinhoSaida> consultarTodosPedidosECompras() {
 
         List<CarrinhoEntity> listaCarrinhoSaida = retornarTodasEntidadesDePedidosEVendas();
 
@@ -147,7 +139,7 @@ public class CarrinhoFacade {
 
     public CarrinhoSaida pagarCompra(String idCliente, Long idCompra) throws Exception {
 
-        CarrinhoEntity entidade = buscaNoRespositoryPorIdCompraEIdCliente(idCliente, idCompra);
+        CarrinhoEntity entidade = buscarCarrinho(idCliente, idCompra);
 
         if (!entidade.getStatusPagamento().equals("Pendente")) {
             throw new PagamentoJaRealizadoException("O pagamento da compra informada ja foi realizado. - Operacao Cancelada.");
@@ -164,7 +156,7 @@ public class CarrinhoFacade {
 
     public CarrinhoSaida entregarCompra(String idCliente, Long idCompra) throws Exception {
 
-        CarrinhoEntity entidade = buscaNoRespositoryPorIdCompraEIdCliente(idCliente, idCompra);
+        CarrinhoEntity entidade = buscarCarrinho(idCliente, idCompra);
 
         if (entidade.getStatusEntrega().equals("Em rota"))
             entidade.setStatusEntrega("Entregue");
@@ -173,23 +165,20 @@ public class CarrinhoFacade {
         else
             throw new Exception("A compra informada ja foi entregue.");
 
-
         carrinhoRepository.save(entidade);
 
         return CarrinhoMapper.mapToDto(entidade);
     }
 
-    public CarrinhoEntity buscaNoRespositoryPorIdCompraEIdCliente(String idCliente, Long idCompra) throws Exception {
+    public CarrinhoEntity buscarCarrinho(String idCliente, Long idCompra) throws Exception {
 
         Optional<CarrinhoEntity> carrinhoEntity = carrinhoRepository.findById(idCompra);
 
-        if (!carrinhoEntity.isPresent()) {
+        if (!carrinhoEntity.isPresent())
             throw new CarrinhoNotFoundException("ID compra não encontrado.");
-        }
 
-        if (!carrinhoEntity.get().getIdCliente().equals(idCliente)) {
+        if (!carrinhoEntity.get().getIdCliente().equals(idCliente))
             throw new ClientInvalidException("Id cliente invalido.");
-        }
 
         return carrinhoEntity.get();
     }
