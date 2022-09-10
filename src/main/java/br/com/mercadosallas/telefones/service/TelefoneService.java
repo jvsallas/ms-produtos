@@ -54,9 +54,6 @@ public class TelefoneService {
 
         List<TelefoneEntity> telefonesDoFornecedor = fornecedorService.buscarTodosTelefonesDoFornecedor(idFornecedor);
 
-        if (telefonesDoFornecedor.isEmpty())
-            throw new TelefoneNotFoundException("Nenhum telefone cadastrado.");
-
         return TelefoneMapper.mapToListDto(telefonesDoFornecedor);
     }
 

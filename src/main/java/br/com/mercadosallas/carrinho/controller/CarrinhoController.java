@@ -10,7 +10,6 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -38,12 +37,12 @@ public class CarrinhoController {
     }
 
     @GetMapping("/extrato/pendentes")
-    public ConsultaSaida consultarEntregasPendentes() throws Exception {
+    public ConsultaSaida consultarEntregasPendentes() {
         return carrinhoFacade.consultarEntregasPendentes();
     }
 
     @GetMapping("/pedido/extrato")
-    public List<CarrinhoSaida> consultarTodosPedidosECompras() throws Exception {
+    public List<CarrinhoSaida> consultarTodosPedidosECompras() {
         return carrinhoFacade.consultarTodosPedidosECompras();
     }
 

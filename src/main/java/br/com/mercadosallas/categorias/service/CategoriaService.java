@@ -46,9 +46,6 @@ public class CategoriaService {
 
         List<CategoriaEntity> categorias = categoriaRepository.findAll();
 
-        if (categorias.isEmpty())
-            throw new CategoriaNotFoundException("Nenhuma categoria cadastrada.");
-
         return CategoriaMapper.mapToListDto(categorias);
     }
 

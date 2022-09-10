@@ -107,9 +107,6 @@ public class CarrinhoFacade {
                 listaVendasNaoEntregue.add(CarrinhoMapper.mapToDto(venda));
         }
 
-        if (listaVendasNaoEntregue.isEmpty())
-            throw new PedidoCompraNotFoundException("Não há entregas pendentes.");
-
         ConsultaSaida extrato = new ConsultaSaida();
         extrato.setVendas(listaVendasNaoEntregue);
 
@@ -122,11 +119,7 @@ public class CarrinhoFacade {
 
     public List<CarrinhoEntity> retornarTodasEntidadesDePedidosEVendas() {
 
-        List<CarrinhoEntity> retornoPedidosEVendas = carrinhoRepository.findAll();
-        if (retornoPedidosEVendas.isEmpty())
-            throw new PedidoCompraNotFoundException("Não ha pedidos/compras realizadas.");
-
-        return retornoPedidosEVendas;
+        return carrinhoRepository.findAll();
     }
 
     public List<CarrinhoSaida> consultarTodosPedidosECompras() {

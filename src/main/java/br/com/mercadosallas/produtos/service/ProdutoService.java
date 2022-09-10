@@ -64,9 +64,6 @@ public class ProdutoService {
 
         List<ProdutoEntity> produtos = produtoRepository.findAll();
 
-        if (produtos.isEmpty())
-            throw new ProdutoNotFoundException("Nenhum produto encontrado;");
-
         return ProdutoMapper.mapToListDto(produtos);
     }
 

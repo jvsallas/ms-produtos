@@ -47,9 +47,6 @@ public class FornecedorService {
 
         List<FornecedorEntity> categorias = fornecedorRepository.findAll();
 
-        if (categorias.isEmpty())
-            throw new FornecedorNotFoundException("Nenhum fornecedor cadastrado.");
-
         return FornecedorMapper.mapToListDto(categorias);
     }
 
