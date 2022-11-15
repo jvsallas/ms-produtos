@@ -1,4 +1,4 @@
-package br.com.mercadosallas.carrinho.model;
+package br.com.mercadosallas.pedidos.model;
 
 import br.com.mercadosallas.produtos.model.ProdutoEntity;
 import lombok.AllArgsConstructor;
@@ -8,7 +8,6 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
@@ -16,7 +15,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity(name = "carrinho")
-public class CarrinhoEntity {
+public class PedidosEntity {
     @Id
     @Column(name = "id", updatable = false, nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)

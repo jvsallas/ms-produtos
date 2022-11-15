@@ -1,6 +1,5 @@
-package br.com.mercadosallas.carrinho.model;
+package br.com.mercadosallas.pedidos.model;
 
-import br.com.mercadosallas.produtos.dto.ProdutoDto;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.AllArgsConstructor;
@@ -8,7 +7,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDate;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @Getter
@@ -16,13 +17,9 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
-public class CarrinhoSaida {
-    private Long id;
+public class PedidoEntrada {
+    @NotBlank
     private String idCliente;
-    private List<ProdutoDto> produtos;
-    private Double valorCompra;
-    private String statusPagamento;
-    private String statusEntrega;
-    private LocalDate dataCompra;
-    private Integer qtdProdutos;
+    @NotEmpty(message = "Por favor, adicione um ou mais produtos ao pedido.")
+    private List<Long> produtos;
 }

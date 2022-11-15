@@ -1,4 +1,4 @@
-package br.com.mercadosallas.carrinho.exception;
+package br.com.mercadosallas.pedidos.exception;
 
 import lombok.Getter;
 

@@ -1,6 +1,6 @@
 package br.com.mercadosallas.handler;
 
-import br.com.mercadosallas.carrinho.exception.*;
+import br.com.mercadosallas.pedidos.exception.*;
 import br.com.mercadosallas.categorias.exception.CategoriaAlreadyExistsException;
 import br.com.mercadosallas.categorias.exception.CategoriaNotFoundException;
 import br.com.mercadosallas.fornecedores.exception.FornecedorAlreadyExistsException;
@@ -10,7 +10,6 @@ import br.com.mercadosallas.produtos.exceptions.ProdutoNotFoundException;
 import br.com.mercadosallas.produtos.exceptions.dto.ErroDto;
 import br.com.mercadosallas.produtos.exceptions.dto.ErroFormularioDto;
 import br.com.mercadosallas.telefones.exception.TelefoneNotFoundException;
-import lombok.extern.log4j.Log4j;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
@@ -108,8 +107,8 @@ public class ErrorInterceptorHandler {
 
 
     @ResponseStatus(code = HttpStatus.NOT_FOUND)
-    @ExceptionHandler(CarrinhoNotFoundException.class)
-    public ErroDto handleTelefoneCarrinhoNotFoundException(CarrinhoNotFoundException exception) {
+    @ExceptionHandler(PedidoNotFoundException.class)
+    public ErroDto handleTelefoneCarrinhoNotFoundException(PedidoNotFoundException exception) {
         return new ErroDto(exception.getMessage());
     }
 
