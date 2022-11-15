@@ -18,6 +18,7 @@ import java.util.List;
 @Entity(name = "carrinho")
 public class CarrinhoEntity {
     @Id
+    @Column(name = "id", updatable = false, nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 

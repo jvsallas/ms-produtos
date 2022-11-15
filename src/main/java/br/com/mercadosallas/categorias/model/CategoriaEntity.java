@@ -9,6 +9,7 @@ import javax.persistence.*;
 public class CategoriaEntity {
 
     @Id
+    @Column(name = "id", updatable = false, nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
