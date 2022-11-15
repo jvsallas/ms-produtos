@@ -4,11 +4,11 @@ import br.com.mercadosallas.carrinho.exception.*;
 import br.com.mercadosallas.categorias.exception.CategoriaAlreadyExistsException;
 import br.com.mercadosallas.fornecedores.exception.FornecedorAlreadyExistsException;
 import br.com.mercadosallas.fornecedores.exception.FornecedorNotFoundException;
-import br.com.mercadosallas.produtos.exception.dto.ErroDto;
-import br.com.mercadosallas.produtos.exception.dto.ErroFormularioDto;
+import br.com.mercadosallas.produtos.exceptions.dto.ErroDto;
+import br.com.mercadosallas.produtos.exceptions.dto.ErroFormularioDto;
 import br.com.mercadosallas.categorias.exception.CategoriaNotFoundException;
-import br.com.mercadosallas.produtos.exception.exceptions.ProdutoAlreadyExistsException;
-import br.com.mercadosallas.produtos.exception.exceptions.ProdutoNotFoundException;
+import br.com.mercadosallas.produtos.exceptions.ProdutoAlreadyExistsException;
+import br.com.mercadosallas.produtos.exceptions.ProdutoNotFoundException;
 import br.com.mercadosallas.telefones.exception.TelefoneNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
@@ -57,7 +57,7 @@ public class ErrorInterceptorHandler {
     @ResponseStatus(code = HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(Exception.class)
     public ErroDto handleException(Exception exception) {
-        return new ErroDto("Ocorreu um inesperado: " + exception.getMessage());
+        return new ErroDto("Ocorreu erro um inesperado: " + exception.getMessage());
     }
 
     @ResponseStatus(code = HttpStatus.CONFLICT)
