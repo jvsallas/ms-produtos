@@ -9,9 +9,11 @@ import br.com.mercadosallas.fornecedores.mapper.FornecedorMapper;
 import br.com.mercadosallas.fornecedores.model.FornecedorEntity;
 import br.com.mercadosallas.fornecedores.repository.FornecedorRepository;
 import br.com.mercadosallas.telefones.model.TelefoneEntity;
+import org.hibernate.exception.ConstraintViolationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -98,11 +100,9 @@ public class FornecedorService {
 
         FornecedorEntity fornecedorEntity = buscarFornecedorPorId(idFornecedor);
 
-//        categoriaRepository.delete(idFornecedor); //TODO Verificar se delete funcionara apos relcionar a categoria com produtos
         fornecedorRepository.delete(fornecedorEntity);
 
         log.info("Fornecedor deletado com sucesso.");
-
     }
 
     private void validarSeFornecedorJaExistePorNome(String nomeFornecedor) {

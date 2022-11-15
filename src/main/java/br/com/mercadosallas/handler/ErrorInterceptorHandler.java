@@ -2,17 +2,20 @@ package br.com.mercadosallas.handler;
 
 import br.com.mercadosallas.carrinho.exception.*;
 import br.com.mercadosallas.categorias.exception.CategoriaAlreadyExistsException;
+import br.com.mercadosallas.categorias.exception.CategoriaNotFoundException;
 import br.com.mercadosallas.fornecedores.exception.FornecedorAlreadyExistsException;
 import br.com.mercadosallas.fornecedores.exception.FornecedorNotFoundException;
-import br.com.mercadosallas.produtos.exceptions.dto.ErroDto;
-import br.com.mercadosallas.produtos.exceptions.dto.ErroFormularioDto;
-import br.com.mercadosallas.categorias.exception.CategoriaNotFoundException;
 import br.com.mercadosallas.produtos.exceptions.ProdutoAlreadyExistsException;
 import br.com.mercadosallas.produtos.exceptions.ProdutoNotFoundException;
+import br.com.mercadosallas.produtos.exceptions.dto.ErroDto;
+import br.com.mercadosallas.produtos.exceptions.dto.ErroFormularioDto;
 import br.com.mercadosallas.telefones.exception.TelefoneNotFoundException;
+import lombok.extern.log4j.Log4j;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -24,6 +27,7 @@ import java.time.DateTimeException;
 import java.util.ArrayList;
 import java.util.List;
 
+@Log4j2
 @RestControllerAdvice
 public class ErrorInterceptorHandler {
 
@@ -137,6 +141,13 @@ public class ErrorInterceptorHandler {
     @ExceptionHandler(ListaProdutosInvalidaException.class)
     public ErroDto handleListaProdutosInvalidaException(ListaProdutosInvalidaException exception) {
         return new ErroDto(exception.getMessage());
+    }
+
+    @ResponseStatus(code = HttpStatus.CONFLICT)
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ErroDto handleConstraintViolationException(DataIntegrityViolationException exception) {
+        log.error("[ERROR] Ocorreu um erro: {}. details: {}", exception.getClass().getSimpleName(), exception.getMessage());
+        return new ErroDto("Não foi possível realizar a operação desejada. Verifique se existe relacionamentos entre os dominios.");
     }
 
 
