@@ -25,6 +25,7 @@ public class FornecedorMapper {
     public static FornecedorDto mapToDto(FornecedorEntity fornecedorEntity){
 
         FornecedorDto fornecedorDto = new FornecedorDto();
+        fornecedorDto.setId(fornecedorEntity.getId());
         fornecedorDto.setNome(fornecedorEntity.getNome());
         fornecedorDto.setCnpj(fornecedorEntity.getCnpj());
         fornecedorDto.setEmail(fornecedorEntity.getEmail());
