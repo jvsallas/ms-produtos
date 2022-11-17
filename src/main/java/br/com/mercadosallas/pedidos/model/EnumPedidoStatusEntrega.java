@@ -1,13 +1,13 @@
 package br.com.mercadosallas.pedidos.model;
 
-public enum StatusEntregaPedido {
+public enum EnumPedidoStatusEntrega {
     EM_ROTA(1,"Em rota"),
     ENTREGUE(2,"Entregue");
 
     private final int id;
     private final String descricao;
 
-    StatusEntregaPedido(int id, String status) {
+    EnumPedidoStatusEntrega(int id, String status) {
         this.id = id;
         this.descricao = status;
     }

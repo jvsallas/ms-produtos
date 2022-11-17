@@ -1,13 +1,13 @@
 package br.com.mercadosallas.pedidos.model;
 
-public enum StatusPagamentoPedido {
+public enum EnumPedidoStatusPagamento {
     PENDENTE(1,"Pendente"),
     PAGO(2,"Pago");
 
     private final int id;
     private final String descricao;
 
-    StatusPagamentoPedido(int id, String status) {
+    EnumPedidoStatusPagamento(int id, String status) {
         this.id = id;
         this.descricao = status;
     }

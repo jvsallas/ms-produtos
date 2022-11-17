@@ -10,8 +10,6 @@ import br.com.mercadosallas.produtos.repository.ProdutoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -30,21 +28,21 @@ public class PedidoFacade {
 
     public PedidoSaida realizarPedido(PedidoEntrada pedidoEntrada) {
 
-        List<ProdutoEntity> produtos = produtoRepository.findAllById(pedidoEntrada.getProdutos());
+        List<ProdutoEntity> produtosEncontrados = produtoRepository.findAllById(pedidoEntrada.getProdutos());
 
-        if (produtos.isEmpty())
+        if (produtosEncontrados.isEmpty())
             throw new PedidoCompraNotFoundException("Produto(s) selecionados não encontrado.");
 
         Double valorTotalPedido = 0D;
 
-        for (ProdutoEntity produto : produtos) {
+        for (ProdutoEntity produto : produtosEncontrados) {
             valorTotalPedido += produto.getPreco();
         }
 
         PedidosEntity pedidosEntity = PedidosMapper.mapToEntity(
-                pedidoEntrada.getIdCliente(), produtos,
+                pedidoEntrada.getIdCliente(), produtosEncontrados,
                 STATUS_AGUARDANDO_PAGAMENTO, STATUS_PAGAMENTO_PENDENTE,
-                valorTotalPedido, produtos.size());
+                valorTotalPedido, produtosEncontrados.size());
 
         pedidosEntity = pedidoRepository.save(pedidosEntity);
 
@@ -57,52 +55,6 @@ public class PedidoFacade {
         PedidosEntity pedidoEntity = optRetornoBanco.orElseThrow(() -> new PedidoCompraNotFoundException("Pedido não encontrado"));
 
         return PedidosMapper.mapToDto(pedidoEntity);
-    }
-
-    public ExtratoSaida consultarPedidosRealizadosPorPeriodoComStatusPagemento(LocalDate dataInicio, LocalDate dataFim, String statusPagamento) {
-
-        if (dataInicio == null || dataFim == null || dataFim.compareTo(dataInicio) < 0)
-            throw new DataInvalidaException("Data Invalida.");
-
-        List<PedidosEntity> pedidos = pedidoRepository.findAll();
-
-        List<PedidoSaida> pedidosFeitosNoPeriodo = new ArrayList<>();
-
-        pedidos.forEach(pedido -> {
-            if (dataInicio.compareTo(pedido.getDataCompra()) <= 0
-                    && dataFim.compareTo(pedido.getDataCompra()) >= 0) {
-                if (statusPagamento.isEmpty())
-                    pedidosFeitosNoPeriodo.add(PedidosMapper.mapToDto(pedido));
-                else if (pedido.getStatusPagamento().equals(statusPagamento))
-                    pedidosFeitosNoPeriodo.add(PedidosMapper.mapToDto(pedido));
-            }
-
-        });
-
-        ExtratoSaida extratoSaida = new ExtratoSaida();
-        extratoSaida.setPedidos(pedidosFeitosNoPeriodo);
-
-        pedidosFeitosNoPeriodo.forEach(pedido -> {
-            extratoSaida.setTotalValorPedidos(extratoSaida.getTotalValorPedidos() + pedido.getValorCompra());
-            extratoSaida.setTotalPedidos(extratoSaida.getTotalPedidos() + pedido.getQtdProdutos());
-        });
-
-        return extratoSaida;
-    }
-
-    public ExtratoSaida extratoPedidosPorStatusEntrega(String statusEntrega) {
-
-        List<PedidoSaida> pedidosNaoEntregues = obterTodosPedidos(statusEntrega);
-
-        ExtratoSaida extrato = new ExtratoSaida();
-        extrato.setPedidos(pedidosNaoEntregues);
-
-        pedidosNaoEntregues.forEach(pedidoSaida -> {
-            extrato.setTotalValorPedidos(extrato.getTotalValorPedidos() + pedidoSaida.getValorCompra());
-            extrato.setTotalPedidos(extrato.getTotalPedidos() + pedidoSaida.getQtdProdutos());
-        });
-
-        return extrato;
     }
 
     public List<PedidoSaida> obterTodosPedidos(String filtroStatusEntrega) {
@@ -123,11 +75,11 @@ public class PedidoFacade {
 
         PedidosEntity entidade = buscarPedido(idCliente, idCompra);
 
-        if (StatusPagamentoPedido.PAGO.getDescricao().equals(entidade.getStatusPagamento()))
+        if (EnumPedidoStatusPagamento.PAGO.getDescricao().equals(entidade.getStatusPagamento()))
             throw new PagamentoJaRealizadoException("O pagamento da compra informada ja foi realizado. - Operacao Cancelada.");
 
-        entidade.setStatusPagamento(StatusPagamentoPedido.PAGO.getDescricao());
-        entidade.setStatusEntrega(StatusEntregaPedido.EM_ROTA.getDescricao());
+        entidade.setStatusPagamento(EnumPedidoStatusPagamento.PAGO.getDescricao());
+        entidade.setStatusEntrega(EnumPedidoStatusEntrega.EM_ROTA.getDescricao());
 
         pedidoRepository.save(entidade);
 
@@ -139,9 +91,9 @@ public class PedidoFacade {
 
         PedidosEntity entidade = buscarPedido(idCliente, idCompra);
 
-        if (StatusEntregaPedido.EM_ROTA.getDescricao().equals(entidade.getStatusEntrega()))
-            entidade.setStatusEntrega(StatusEntregaPedido.ENTREGUE.getDescricao());
-        else if (StatusPagamentoPedido.PENDENTE.getDescricao().equals(entidade.getStatusPagamento()))
+        if (EnumPedidoStatusEntrega.EM_ROTA.getDescricao().equals(entidade.getStatusEntrega()))
+            entidade.setStatusEntrega(EnumPedidoStatusEntrega.ENTREGUE.getDescricao());
+        else if (EnumPedidoStatusPagamento.PENDENTE.getDescricao().equals(entidade.getStatusPagamento()))
             throw new StatusInvalidoException("Pagamento pendente.");
         else
             throw new StatusInvalidoException("A compra informada ja foi entregue.");
