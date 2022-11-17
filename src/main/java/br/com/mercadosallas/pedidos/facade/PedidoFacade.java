@@ -142,16 +142,16 @@ public class PedidoFacade {
     }
 
 
-    public PedidoSaida entregarCompra(String idCliente, Long idCompra) throws Exception {
+    public PedidoSaida entregarCompra(String idCliente, Long idCompra) {
 
         PedidosEntity entidade = buscarPedido(idCliente, idCompra);
 
         if (entidade.getStatusEntrega().equals("Em rota"))
             entidade.setStatusEntrega("Entregue");
         else if (entidade.getStatusPagamento().equals("Pendente"))
-            throw new Exception("Pagamento pendente.");
+            throw new StatusInvalidoException("Pagamento pendente.");
         else
-            throw new Exception("A compra informada ja foi entregue.");
+            throw new StatusInvalidoException("A compra informada ja foi entregue.");
 
         pedidoRepository.save(entidade);
 

@@ -149,6 +149,12 @@ public class ErrorInterceptorHandler {
         return new ErroDto("Não foi possível realizar a operação desejada. Verifique se existe relacionamentos entre os dominios.");
     }
 
+    @ResponseStatus(code = HttpStatus.UNPROCESSABLE_ENTITY)
+    @ExceptionHandler(StatusInvalidoException.class)
+    public ErroDto handleStatusInvalidoException(StatusInvalidoException exception) {
+        return new ErroDto(exception.getMessage());
+    }
+
 
 
 }
