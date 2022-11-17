@@ -3,10 +3,7 @@ package br.com.mercadosallas.pedidos.facade;
 
 import br.com.mercadosallas.pedidos.exception.*;
 import br.com.mercadosallas.pedidos.mapper.PedidosMapper;
-import br.com.mercadosallas.pedidos.model.PedidosEntity;
-import br.com.mercadosallas.pedidos.model.PedidoEntrada;
-import br.com.mercadosallas.pedidos.model.PedidoSaida;
-import br.com.mercadosallas.pedidos.model.ExtratoSaida;
+import br.com.mercadosallas.pedidos.model.*;
 import br.com.mercadosallas.pedidos.repository.PedidoRepository;
 import br.com.mercadosallas.produtos.model.ProdutoEntity;
 import br.com.mercadosallas.produtos.repository.ProdutoRepository;
@@ -129,12 +126,11 @@ public class PedidoFacade {
 
         PedidosEntity entidade = buscarPedido(idCliente, idCompra);
 
-        if (!entidade.getStatusPagamento().equals("Pendente")) {
+        if (StatusPagamentoPedido.PAGO.getDescricao().equals(entidade.getStatusPagamento()))
             throw new PagamentoJaRealizadoException("O pagamento da compra informada ja foi realizado. - Operacao Cancelada.");
-        } else {
-            entidade.setStatusPagamento("Pago");
-            entidade.setStatusEntrega("Em rota");
-        }
+
+        entidade.setStatusPagamento(StatusPagamentoPedido.PAGO.getDescricao());
+        entidade.setStatusEntrega(StatusEntregaPedido.EM_ROTA.getDescricao());
 
         pedidoRepository.save(entidade);
 
@@ -146,9 +142,9 @@ public class PedidoFacade {
 
         PedidosEntity entidade = buscarPedido(idCliente, idCompra);
 
-        if (entidade.getStatusEntrega().equals("Em rota"))
-            entidade.setStatusEntrega("Entregue");
-        else if (entidade.getStatusPagamento().equals("Pendente"))
+        if (StatusEntregaPedido.EM_ROTA.getDescricao().equals(entidade.getStatusEntrega()))
+            entidade.setStatusEntrega(StatusEntregaPedido.ENTREGUE.getDescricao());
+        else if (StatusPagamentoPedido.PENDENTE.getDescricao().equals(entidade.getStatusPagamento()))
             throw new StatusInvalidoException("Pagamento pendente.");
         else
             throw new StatusInvalidoException("A compra informada ja foi entregue.");
@@ -160,15 +156,15 @@ public class PedidoFacade {
 
     public PedidosEntity buscarPedido(String idCliente, Long idCompra) {
 
-        Optional<PedidosEntity> pedidoEntity = pedidoRepository.findById(idCompra);
+        Optional<PedidosEntity> optPedidoEntity = pedidoRepository.findById(idCompra);
 
-        if (!pedidoEntity.isPresent())
-            throw new PedidoNotFoundException("ID pedido não encontrado.");
+        PedidosEntity pedidosEntity = optPedidoEntity
+                .orElseThrow(() -> new PedidoNotFoundException("Pedido não encontrado."));
 
-        if (!pedidoEntity.get().getIdCliente().equals(idCliente))
-            throw new ClientInvalidException("Id cliente invalido.");
+        if (!pedidosEntity.getIdCliente().equals(idCliente))
+            throw new ClientInvalidException("ID cliente invalido.");
 
-        return pedidoEntity.get();
+        return pedidosEntity;
     }
 
 }
