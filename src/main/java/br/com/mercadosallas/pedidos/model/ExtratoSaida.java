@@ -13,12 +13,12 @@ import java.util.List;
 @AllArgsConstructor
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
 public class ExtratoSaida {
-    private Integer totalVendas;
-    private Double totalValorCompras;
-    private List<PedidoSaida> vendas;
+    private Integer totalPedidos;
+    private Double totalValorPedidos;
+    private List<PedidoSaida> pedidos;
 
     public ExtratoSaida() {
-        totalVendas = 0;
-        totalValorCompras = 0D;
+        totalPedidos = 0;
+        totalValorPedidos = 0D;
     }
 }

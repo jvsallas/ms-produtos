@@ -14,6 +14,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class PedidoFacade {
@@ -51,11 +52,11 @@ public class PedidoFacade {
     }
 
     public PedidoSaida buscarPedido(Long id) {
-        Optional<PedidosEntity> retornoBanco = pedidoRepository.findById(id);
-        if (!retornoBanco.isPresent())
-            throw new PedidoCompraNotFoundException("Pedido não encontrado");
+        Optional<PedidosEntity> optRetornoBanco = pedidoRepository.findById(id);
 
-        return PedidosMapper.mapToDto(retornoBanco.get());
+        PedidosEntity pedidoEntity = optRetornoBanco.orElseThrow(() -> new PedidoCompraNotFoundException("Pedido não encontrado"));
+
+        return PedidosMapper.mapToDto(pedidoEntity);
     }
 
     public ExtratoSaida consultarPedidosRealizadosPorPeriodoComStatusPagemento(LocalDate dataInicio, LocalDate dataFim, String statusPagamento) {
@@ -63,62 +64,58 @@ public class PedidoFacade {
         if (dataInicio == null || dataFim == null || dataFim.compareTo(dataInicio) < 0)
             throw new DataInvalidaException("Data Invalida.");
 
-        List<PedidosEntity> retornoPedidosEVendas = pedidoRepository.findAll();
+        List<PedidosEntity> pedidos = pedidoRepository.findAll();
 
-        List<PedidoSaida> listaVendasNoPeriodo = new ArrayList<>();
+        List<PedidoSaida> pedidosFeitosNoPeriodo = new ArrayList<>();
 
-        for (PedidosEntity pedido : retornoPedidosEVendas) {
-
+        pedidos.forEach(pedido -> {
             if (dataInicio.compareTo(pedido.getDataCompra()) <= 0
                     && dataFim.compareTo(pedido.getDataCompra()) >= 0) {
                 if (statusPagamento.isEmpty())
-                    listaVendasNoPeriodo.add(PedidosMapper.mapToDto(pedido));
+                    pedidosFeitosNoPeriodo.add(PedidosMapper.mapToDto(pedido));
                 else if (pedido.getStatusPagamento().equals(statusPagamento))
-                    listaVendasNoPeriodo.add(PedidosMapper.mapToDto(pedido));
-
+                    pedidosFeitosNoPeriodo.add(PedidosMapper.mapToDto(pedido));
             }
-        }
+
+        });
 
         ExtratoSaida extratoSaida = new ExtratoSaida();
+        extratoSaida.setPedidos(pedidosFeitosNoPeriodo);
 
-        extratoSaida.setVendas(listaVendasNoPeriodo);
+        pedidosFeitosNoPeriodo.forEach(pedido -> {
+            extratoSaida.setTotalValorPedidos(extratoSaida.getTotalValorPedidos() + pedido.getValorCompra());
+            extratoSaida.setTotalPedidos(extratoSaida.getTotalPedidos() + pedido.getQtdProdutos());
+        });
 
-        for (PedidoSaida pedidoSaida : listaVendasNoPeriodo) {
-            extratoSaida.setTotalValorCompras(extratoSaida.getTotalValorCompras() + pedidoSaida.getValorCompra());
-            extratoSaida.setTotalVendas(extratoSaida.getTotalVendas() + pedidoSaida.getQtdProdutos());
-        }
         return extratoSaida;
     }
 
     public ExtratoSaida extratoPedidosPorStatusEntrega(String statusEntrega) {
 
-        List<PedidoSaida> listaVendasNaoEntregue = obterTodosPedidos(statusEntrega);
+        List<PedidoSaida> pedidosNaoEntregues = obterTodosPedidos(statusEntrega);
 
         ExtratoSaida extrato = new ExtratoSaida();
-        extrato.setVendas(listaVendasNaoEntregue);
+        extrato.setPedidos(pedidosNaoEntregues);
 
-        for (PedidoSaida pedidoSaida : listaVendasNaoEntregue) {
-            extrato.setTotalValorCompras(extrato.getTotalValorCompras() + pedidoSaida.getValorCompra());
-            extrato.setTotalVendas(extrato.getTotalVendas() + pedidoSaida.getQtdProdutos());
-        }
+        pedidosNaoEntregues.forEach(pedidoSaida -> {
+            extrato.setTotalValorPedidos(extrato.getTotalValorPedidos() + pedidoSaida.getValorCompra());
+            extrato.setTotalPedidos(extrato.getTotalPedidos() + pedidoSaida.getQtdProdutos());
+        });
+
         return extrato;
     }
 
     public List<PedidoSaida> obterTodosPedidos(String filtroStatusEntrega) {
 
-        List<PedidosEntity> todosPedidos = pedidoRepository.findAll();
+        List<PedidosEntity> pedidos = pedidoRepository.findAll();
 
         if (filtroStatusEntrega.isEmpty())
-            return PedidosMapper.mapToListDto(todosPedidos);
+            return PedidosMapper.mapToListDto(pedidos);
 
-        List<PedidoSaida> pedidosFiltrados = new ArrayList<>();
-
-        for (PedidosEntity pedidoEntity : todosPedidos) {
-            if (pedidoEntity.getStatusEntrega().equals(filtroStatusEntrega))
-                pedidosFiltrados.add(PedidosMapper.mapToDto(pedidoEntity));
-        }
-
-        return pedidosFiltrados;
+        return pedidos.stream()
+                .filter(pedido -> pedido.getStatusEntrega().equals(filtroStatusEntrega))
+                .map(PedidosMapper::mapToDto)
+                .collect(Collectors.toList());
     }
 
 
