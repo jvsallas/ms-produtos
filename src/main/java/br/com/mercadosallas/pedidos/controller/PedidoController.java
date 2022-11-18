@@ -1,6 +1,8 @@
 package br.com.mercadosallas.pedidos.controller;
 
 import br.com.mercadosallas.pedidos.facade.PedidoFacade;
+import br.com.mercadosallas.pedidos.model.PedidoEntregaRequest;
+import br.com.mercadosallas.pedidos.model.PedidoPagamentoRequest;
 import br.com.mercadosallas.pedidos.model.PedidoEntrada;
 import br.com.mercadosallas.pedidos.model.PedidoSaida;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,14 +36,14 @@ public class PedidoController {
         return pedidoFacade.obterTodosPedidos(statusEntrega);
     }
 
-    @PutMapping("/pagamentos/{id_cliente}/{id_pedido}")
-    public PedidoSaida pagarCompra(@PathVariable(name = "id_cliente") String idCliente, @PathVariable(name = "id_pedido") Long idPedido) {
-        return pedidoFacade.pagarCompra(idCliente, idPedido);
+    @PatchMapping("/{id_pedido}/pagamentos")
+    public PedidoSaida pagarCompra(@PathVariable(name = "id_pedido") Long idPedido, @RequestBody PedidoPagamentoRequest pedidoPagamentoRequest) {
+        return pedidoFacade.pagarPedido(idPedido, pedidoPagamentoRequest);
     }
 
-    @PutMapping("/entrega/{idCliente}/{idCompra}")
-    public PedidoSaida entregarCompra(@PathVariable String idCliente, @PathVariable Long idCompra) {
-        return pedidoFacade.entregarCompra(idCliente, idCompra);
+    @PatchMapping("/{id_pedido}/entregas")
+    public PedidoSaida entregarCompra(@PathVariable(name = "id_pedido") Long idPedido, @RequestBody PedidoEntregaRequest pedidoEntregaRequest) {
+        return pedidoFacade.entregarPedido(idPedido, pedidoEntregaRequest);
     }
 
 }

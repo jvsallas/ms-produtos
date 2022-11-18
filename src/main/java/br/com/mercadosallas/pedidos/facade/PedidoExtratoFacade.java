@@ -5,15 +5,12 @@ import br.com.mercadosallas.pedidos.exception.*;
 import br.com.mercadosallas.pedidos.mapper.PedidosMapper;
 import br.com.mercadosallas.pedidos.model.*;
 import br.com.mercadosallas.pedidos.repository.PedidoRepository;
-import br.com.mercadosallas.produtos.model.ProdutoEntity;
-import br.com.mercadosallas.produtos.repository.ProdutoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -27,7 +24,7 @@ public class PedidoExtratoFacade {
         if (dataInicio == null || dataFim == null || dataFim.compareTo(dataInicio) < 0)
             throw new DataInvalidaException("Data Invalida.");
 
-        List<PedidosEntity> pedidos = pedidoRepository.findAll();
+        List<PedidoEntity> pedidos = pedidoRepository.findAll();
 
         List<PedidoSaida> pedidosFeitosNoPeriodo = new ArrayList<>();
 
@@ -69,7 +66,7 @@ public class PedidoExtratoFacade {
 
     public List<PedidoSaida> obterTodosPedidos(String filtroStatusEntrega) {
 
-        List<PedidosEntity> pedidos = pedidoRepository.findAll();
+        List<PedidoEntity> pedidos = pedidoRepository.findAll();
 
         if (filtroStatusEntrega.isEmpty())
             return PedidosMapper.mapToListDto(pedidos);

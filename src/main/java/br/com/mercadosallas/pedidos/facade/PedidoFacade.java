@@ -39,27 +39,27 @@ public class PedidoFacade {
             valorTotalPedido += produto.getPreco();
         }
 
-        PedidosEntity pedidosEntity = PedidosMapper.mapToEntity(
+        PedidoEntity pedidoEntity = PedidosMapper.mapToEntity(
                 pedidoEntrada.getIdCliente(), produtosEncontrados,
                 STATUS_AGUARDANDO_PAGAMENTO, STATUS_PAGAMENTO_PENDENTE,
                 valorTotalPedido, produtosEncontrados.size());
 
-        pedidosEntity = pedidoRepository.save(pedidosEntity);
+        pedidoEntity = pedidoRepository.save(pedidoEntity);
 
-        return PedidosMapper.mapToDto(pedidosEntity);
+        return PedidosMapper.mapToDto(pedidoEntity);
     }
 
     public PedidoSaida buscarPedido(Long id) {
-        Optional<PedidosEntity> optRetornoBanco = pedidoRepository.findById(id);
+        Optional<PedidoEntity> optRetornoBanco = pedidoRepository.findById(id);
 
-        PedidosEntity pedidoEntity = optRetornoBanco.orElseThrow(() -> new PedidoCompraNotFoundException("Pedido não encontrado"));
+        PedidoEntity pedidoEntity = optRetornoBanco.orElseThrow(() -> new PedidoCompraNotFoundException("Pedido não encontrado"));
 
         return PedidosMapper.mapToDto(pedidoEntity);
     }
 
     public List<PedidoSaida> obterTodosPedidos(String filtroStatusEntrega) {
 
-        List<PedidosEntity> pedidos = pedidoRepository.findAll();
+        List<PedidoEntity> pedidos = pedidoRepository.findAll();
 
         if (filtroStatusEntrega.isEmpty())
             return PedidosMapper.mapToListDto(pedidos);
@@ -71,25 +71,38 @@ public class PedidoFacade {
     }
 
 
-    public PedidoSaida pagarCompra(String idCliente, Long idCompra) {
+    public PedidoSaida pagarPedido(Long idPedido, PedidoPagamentoRequest pedidoPagamentoRequest) {
 
-        PedidosEntity entidade = buscarPedido(idCliente, idCompra);
+        PedidoEntity pedidoEntity = buscarPedido(idPedido, pedidoPagamentoRequest.getIdCliente());
 
-        if (EnumPedidoStatusPagamento.PAGO.getDescricao().equals(entidade.getStatusPagamento()))
+        if (EnumPedidoStatusPagamento.PAGO.getDescricao().equals(pedidoEntity.getStatusPagamento()))
             throw new PagamentoJaRealizadoException("O pagamento da compra informada ja foi realizado. - Operacao Cancelada.");
 
-        entidade.setStatusPagamento(EnumPedidoStatusPagamento.PAGO.getDescricao());
-        entidade.setStatusEntrega(EnumPedidoStatusEntrega.EM_ROTA.getDescricao());
+        pedidoEntity.setStatusPagamento(EnumPedidoStatusPagamento.PAGO.getDescricao());
+        pedidoEntity.setStatusEntrega(EnumPedidoStatusEntrega.EM_ROTA.getDescricao());
 
-        pedidoRepository.save(entidade);
+        pedidoRepository.save(pedidoEntity);
 
-        return PedidosMapper.mapToDto(entidade);
+        return PedidosMapper.mapToDto(pedidoEntity);
     }
 
 
-    public PedidoSaida entregarCompra(String idCliente, Long idCompra) {
+    public PedidoEntity buscarPedido(Long idPedido, String idCliente) {
 
-        PedidosEntity entidade = buscarPedido(idCliente, idCompra);
+        Optional<PedidoEntity> optPedidoEntity = pedidoRepository.findById(idPedido);
+
+        PedidoEntity pedidoEntity = optPedidoEntity
+                .orElseThrow(() -> new PedidoNotFoundException("Pedido não encontrado."));
+
+        if (!pedidoEntity.getIdCliente().equals(idCliente))
+            throw new ClientInvalidException("ID cliente invalido.");
+
+        return pedidoEntity;
+    }
+
+    public PedidoSaida entregarPedido(Long idCompra, PedidoEntregaRequest pedidoEntregaRequest) {
+
+        PedidoEntity entidade = buscarPedido(idCompra, pedidoEntregaRequest.getIdCliente());
 
         if (EnumPedidoStatusEntrega.EM_ROTA.getDescricao().equals(entidade.getStatusEntrega()))
             entidade.setStatusEntrega(EnumPedidoStatusEntrega.ENTREGUE.getDescricao());
@@ -101,19 +114,6 @@ public class PedidoFacade {
         pedidoRepository.save(entidade);
 
         return PedidosMapper.mapToDto(entidade);
-    }
-
-    public PedidosEntity buscarPedido(String idCliente, Long idCompra) {
-
-        Optional<PedidosEntity> optPedidoEntity = pedidoRepository.findById(idCompra);
-
-        PedidosEntity pedidosEntity = optPedidoEntity
-                .orElseThrow(() -> new PedidoNotFoundException("Pedido não encontrado."));
-
-        if (!pedidosEntity.getIdCliente().equals(idCliente))
-            throw new ClientInvalidException("ID cliente invalido.");
-
-        return pedidosEntity;
     }
 
 }

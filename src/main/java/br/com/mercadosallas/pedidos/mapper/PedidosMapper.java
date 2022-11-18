@@ -1,6 +1,6 @@
 package br.com.mercadosallas.pedidos.mapper;
 
-import br.com.mercadosallas.pedidos.model.PedidosEntity;
+import br.com.mercadosallas.pedidos.model.PedidoEntity;
 import br.com.mercadosallas.pedidos.model.PedidoSaida;
 import br.com.mercadosallas.produtos.mapper.ProdutoMapper;
 import br.com.mercadosallas.produtos.model.ProdutoEntity;
@@ -11,40 +11,40 @@ import java.util.stream.Collectors;
 
 public class PedidosMapper {
 
-    public static PedidosEntity mapToEntity(String idCliente, List<ProdutoEntity> produtos,
-                                            String statusAguardandoPagamento, String statusPagamentoPendente, Double valorTotalCompra,
-                                            Integer qtdProdutos){
+    public static PedidoEntity mapToEntity(String idCliente, List<ProdutoEntity> produtos,
+                                           String statusAguardandoPagamento, String statusPagamentoPendente, Double valorTotalCompra,
+                                           Integer qtdProdutos){
 
 
-        PedidosEntity pedidosEntity = new PedidosEntity();
-        pedidosEntity.setIdCliente(idCliente);
-        pedidosEntity.setProdutos(produtos);
-        pedidosEntity.setStatusPagamento(statusPagamentoPendente);
-        pedidosEntity.setStatusEntrega(statusAguardandoPagamento);
-        pedidosEntity.setDataCompra(LocalDate.now());
-        pedidosEntity.setValorCompra(valorTotalCompra);
-        pedidosEntity.setQtdProdutos(qtdProdutos);
+        PedidoEntity pedidoEntity = new PedidoEntity();
+        pedidoEntity.setIdCliente(idCliente);
+        pedidoEntity.setProdutos(produtos);
+        pedidoEntity.setStatusPagamento(statusPagamentoPendente);
+        pedidoEntity.setStatusEntrega(statusAguardandoPagamento);
+        pedidoEntity.setDataCompra(LocalDate.now());
+        pedidoEntity.setValorCompra(valorTotalCompra);
+        pedidoEntity.setQtdProdutos(qtdProdutos);
 
-        return pedidosEntity;
+        return pedidoEntity;
     }
 
 
-    public static PedidoSaida mapToDto(PedidosEntity pedidosEntity){
+    public static PedidoSaida mapToDto(PedidoEntity pedidoEntity){
 
         PedidoSaida pedidoSaida = new PedidoSaida();
-        pedidoSaida.setId(pedidosEntity.getId());
-        pedidoSaida.setIdCliente(pedidosEntity.getIdCliente());
-        pedidoSaida.setProdutos(ProdutoMapper.mapToListDto(pedidosEntity.getProdutos()));
-        pedidoSaida.setQtdProdutos(pedidosEntity.getQtdProdutos());
-        pedidoSaida.setStatusEntrega(pedidosEntity.getStatusEntrega());
-        pedidoSaida.setStatusPagamento(pedidosEntity.getStatusPagamento());
-        pedidoSaida.setValorCompra(pedidosEntity.getValorCompra());
-        pedidoSaida.setDataCompra(pedidosEntity.getDataCompra());
+        pedidoSaida.setId(pedidoEntity.getId());
+        pedidoSaida.setIdCliente(pedidoEntity.getIdCliente());
+        pedidoSaida.setProdutos(ProdutoMapper.mapToListDto(pedidoEntity.getProdutos()));
+        pedidoSaida.setQtdProdutos(pedidoEntity.getQtdProdutos());
+        pedidoSaida.setStatusEntrega(pedidoEntity.getStatusEntrega());
+        pedidoSaida.setStatusPagamento(pedidoEntity.getStatusPagamento());
+        pedidoSaida.setValorCompra(pedidoEntity.getValorCompra());
+        pedidoSaida.setDataCompra(pedidoEntity.getDataCompra());
 
         return pedidoSaida;
     }
 
-    public static List<PedidoSaida> mapToListDto(List<PedidosEntity> carrinhos){
+    public static List<PedidoSaida> mapToListDto(List<PedidoEntity> carrinhos){
         return carrinhos.stream().map(PedidosMapper::mapToDto).collect(Collectors.toList());
     }
 
